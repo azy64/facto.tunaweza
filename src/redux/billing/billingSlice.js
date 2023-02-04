@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { BASE_HOST, BILLING_URL } from '../constants/Constants';
 
 const initState = {
-  billings: new Set(),
+  billings: [],
 };
 
 /**
@@ -52,16 +52,16 @@ const billingSlice = createSlice({
   name: 'bill-crud',
   reducers: {
     createBilling: (state, action) => {
-      state.billings.add(action.payload);
+      state.billings.push(action.payload);
     },
     removeBilling: (state, { payload }) => {
-      state.billings.forEach((el) => { if (el.id === payload.id)state.billings.delete(el); });
+      const prev = state;
+      // state.billings.forEach((el) => { if (el.id === payload.id)state.billings.delete(el); });
+      prev.billings = state.billings.filter((el) => el.id !== payload.id);
     },
     loadBillings: (state, { payload }) => {
-      payload.map((el) => {
-        state.billings.add(el);
-        return el;
-      });
+      const prev = state;
+      prev.billings = payload;
     },
   },
   extraReducers: (builder) => {
@@ -71,16 +71,15 @@ const billingSlice = createSlice({
      * @param payload
      */
     builder.addCase(postNewBilling.fulfilled, (state, payload) => {
-      state.billings.add(payload.result);
+      state.billings.push(payload.result);
     });
     builder.addCase(getBillings.fulfilled, (state, payload) => {
-      payload.map((el) => {
-        state.billings.add(el);
-        return el;
-      });
+      const prev = state;
+      prev.billings = payload;
     });
     builder.addCase(deleteBilling.fulfilled, (state, payload) => {
-      state.billings.forEach((el) => { if (el.id === payload.id)state.billings.delete(el); });
+      const prev = state;
+      prev.billings = state.billings.filter((el) => el.id !== payload.id);
     });
   },
 });

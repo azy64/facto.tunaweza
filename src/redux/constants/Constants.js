@@ -2,7 +2,7 @@
  * host
  */
 
-export const BASE_HOST = 'http://localhost/';
+export const BASE_HOST = 'http://localhost:8000';
 
 /**
  * for Billings
