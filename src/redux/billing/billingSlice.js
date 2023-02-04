@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { POST_BILLING_URL, GET_BILLING_URL, DELETE_BILLING_URL } from '../constants/Constants';
+import { BASE_HOST, BILLING_URL } from '../constants/Constants';
 
 const initState = {
   billings: new Set(),
@@ -11,7 +11,7 @@ const initState = {
  */
 
 export const postNewBilling = createAsyncThunk('post/bill', (billing) => {
-  fetch(`${POST_BILLING_URL}`, {
+  fetch(`${BASE_HOST}${BILLING_URL}`, {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
@@ -25,7 +25,7 @@ export const postNewBilling = createAsyncThunk('post/bill', (billing) => {
  * here is a function to get billings
  */
 export const getBillings = createAsyncThunk('get/bills', () => {
-  fetch(`${GET_BILLING_URL}`)
+  fetch(`${BASE_HOST}${BILLING_URL}`)
     .then((result) => result.json())
     .then((data) => data);
 });
@@ -33,13 +33,12 @@ export const getBillings = createAsyncThunk('get/bills', () => {
 /**
  * here is a function for delete billing
  */
-export const deleteBilling = createAsyncThunk('delete/bill', (billing) => {
-  fetch(`${DELETE_BILLING_URL}`, {
+export const deleteBilling = createAsyncThunk('delete/bill', (id) => {
+  fetch(`${BASE_HOST}${BILLING_URL}/${id}`, {
     method: 'DELETE',
     headers: {
       'content-type': 'application/json',
     },
-    body: JSON.stringify(billing),
   })
     .then((result) => result.json())
     .then((data) => data);
@@ -50,7 +49,7 @@ export const deleteBilling = createAsyncThunk('delete/bill', (billing) => {
  */
 const billingSlice = createSlice({
   initialState: initState,
-  name: 'crud',
+  name: 'bill-crud',
   reducers: {
     createBilling: (state, action) => {
       state.billings.add(action.payload);
@@ -79,6 +78,9 @@ const billingSlice = createSlice({
         state.billings.add(el);
         return el;
       });
+    });
+    builder.addCase(deleteBilling.fulfilled, (state, payload) => {
+      state.billings.forEach((el) => { if (el.id === payload.id)state.billings.delete(el); });
     });
   },
 });
