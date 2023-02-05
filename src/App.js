@@ -1,19 +1,21 @@
 import { Route, Routes } from 'react-router-dom';
 import './App.css';
 import Login from './Components/Login';
-import { useUserLogin } from './Hook/user/userHooks';
+import DashBoard from './Components/DashBoard';
+import Menu from './Components/Menu';
+import { useUserExist } from './Hook/user/userHooks';
 
 const App = () => {
-  // const userExist = useUserExist();
-  const username = 'allysaidi64@gmail.com';
-  const password = 'xxxxxx89';
-  const user = useUserLogin(username, password);
-  console.log(user);
-
+  const user = useUserExist();
   return (
     <div className="App">
+      {
+      user !== false ? <Menu /> : ''
+    }
+
       <Routes>
         <Route exact path="/" element={<Login />} />
+        <Route exact path="/dashboard" element={<DashBoard />} />
       </Routes>
     </div>
   );
